@@ -40,7 +40,7 @@
              </ul>
             </div><!-- /feed -->
             <div class="continue-reading pull-right">
-             <a href="#">Continue Reading <i class="fa fa-angle-right"></i></a>
+             <a href="{{ route('posts.view', [ 'id' => $post->id ]) }}">Continue Reading <i class="fa fa-angle-right"></i></a>
             </div><!-- /continue-reading -->
            </div><!-- /read-more -->
           </div><!-- /.post-content -->

@@ -15,7 +15,7 @@ class PostStat extends Model
 
     public function views(){
 
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(Post::class,'post_id','id');
     }
 
 

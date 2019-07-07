@@ -13,35 +13,16 @@ use DB;
 
 class PostsController extends Controller
 {
-    //
-//  protected $posts=[
-// 1=>[
-// 'id'=> 1,
-// 'title' =>'post 1',
-// 'content'=>'Post content ....'
-//     ],
-//     2=>[
-//         'id'=> 2,
-//         'title' =>'post 2',
-//         'content'=>'Post content ....'
-//             ],
-
-//             3 =>[
-//                 'id'=> 3,
-//                 'title' =>'post 3',
-//                 'content'=>'Post content ....'
-//                     ],
-//  ];
-
-
     public function index(){
 
+      $posts=  Post::published()->orderBy('created_at','DESC')->simplePaginate(10);
+    $mostview=Post::with('stat')->orderBy('id','ASC')->limit(3)->get();
         return view('posts.index') ->with([
-            // 'posts'=> Post::all(),
+
             // 'posts' =>Post::where('status','=','published')->orderBy('created_at','DESC')->get(),
-            'posts' =>Post::published()->orderBy('created_at','DESC')->simplePaginate(10),
-// 'posts'=> $this->posts,
- 'title' => '<h2>Title</h2>',
+            'posts' => $posts,
+           'mostview'=>$mostview,
+             'title' => '<h2>Title</h2>',
 
         ]);
     }
@@ -78,6 +59,7 @@ class PostsController extends Controller
 
 
     public function categoryposts($id){
+
        $posts= Category::with('posts')->where('id' ,'=',$id)->get();
         return view('posts.categoryOfpost',[
             'posts'=> $posts

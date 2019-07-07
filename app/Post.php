@@ -108,6 +108,6 @@ class Post extends Model
     public function stat()
     {
 
-        return $this->hasOne(PostStat::class)->withDefault();
+        return $this->hasOne(PostStat::class,'post_id','id')->withDefault();
     }
 }
