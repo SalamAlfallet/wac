@@ -5,7 +5,23 @@
 
 
 @section('content')
+@section('style')
+<style>
 
+.entry-title{
+
+
+
+    color: #1ab394 !important;
+
+    font-size: 20px;
+
+
+}
+}
+
+</style>
+@endsection
 
 
 <div class="col-md-3">
@@ -100,12 +116,12 @@
        </div>
 
        <div class="col-md-3">
+            <h1 class="entry-title ml-4">Category</h1>
+            <div class="card widget-info-two">
 
-            <div class="card widget-info-two">git commit -m "first commit"
-                
                     <ul class="list-group list-group-flush">
                           @foreach (App\Category::all() as $category )
-                      <li class="list-group-item"><i class="fa fa-map-marker"></i>&nbsp;
+                      <li class="list-group-item"><i class="fa fa-bookmark"></i>&nbsp;
 
 
                           <a   href="{{ route('postsOfcategory', [ 'id' => $category->id ]) }}">   {{$category->name}}</a>
@@ -114,10 +130,35 @@
                            @endforeach
 
                     </ul>
-                  </div>
+      </div>
 
 
-       </div>
+      <h1 class="entry-title ml-4">Tags</h1>
+      <div class="card widget-info-two">
+
+              <ul class="list-group list-group-flush">
+                    @foreach (App\Tag::all() as $tags )
+                <li class="list-group-item"><i class="fa fa-tags"></i>&nbsp;
+
+
+                    <a   href="#">   {{$tags->name}}</a>
+                  </li>
+
+                     @endforeach
+
+              </ul>
+</div>
+
+
+
+
+
+
+
+
+         </div>
+
+
 {{$posts->links()}}
 
 

@@ -1,7 +1,7 @@
 
 @extends('layouts.master')
 
-@section('title' ,'Posts')
+@section('title' ,'Category')
 
 
 @section('content')
@@ -9,9 +9,9 @@
 
 <div class="col-lg-12">
         <div class="row">
-                @foreach($posts as $cat)
-                @foreach($cat->posts as $post)
-       <div class="col-sm-6">
+             @foreach($posts as $cat)
+              @foreach($cat->posts as $post)
+       <div class="col-sm-4">
         <div class="tr-section">
          <div class="tr-post">
           <div class="entry-header">
@@ -36,7 +36,7 @@
             <div class="feed pull-left">
              <ul>
 
-             <li><i class="fa fa-heart-o"></i>{{$post->stat->views}}</li>
+             <li><i class="fa fa-eye"></i>{{$post->stat->views}}</li>
              </ul>
             </div><!-- /feed -->
             <div class="continue-reading pull-right">
