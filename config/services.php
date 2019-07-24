@@ -44,4 +44,12 @@ return [
         ],
     ],
 
+    'nexmo' => [
+        'key' =>'9be9ccf6',
+        'secret' => 'f49XajredUZqauN7',
+        'sms_from' => 'NEXMO',
+    ],
+
+
+
 ];

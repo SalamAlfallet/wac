@@ -1,4 +1,3 @@
-
 @extends('layouts.default2')
 @section('titlepage')
 <br>
@@ -10,39 +9,85 @@ Edit Category
 
 
 
-<div class="row mt-4">
+
+<div class="container">
+    <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="main-card mb-3 card">
+            <div class="card">
+                <div class="card-header">Create Category</div>
+
                 <div class="card-body">
-<form method="post" action="{{ route('admin.category.update', [ 'id' => $Category->id ]) }}">
-@method('PUT')
-@csrf
+
+
+                    <form method="post" action="{{ route('admin.category.update', [ 'id' => $Category->id ]) }}" enctype="multipart/form-data">
+                        @method('PUT')
+                        @csrf
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">Name:</label>
+
+                            <div class="col-md-6">
+                                <input type="text" name="name" value="{{old('name', $Category->name )}}" class="form-control @error('name') is-invalid @enderror" autofocus>
+
+
+                                @error('name')
+                                <p class="text-danger">{{$message}}</p>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">Color:</label>
+
+                            <div class="col-md-6">
+                                <input type="text" name="color" value="{{old('name', $Category->color )}}" class="form-control @error('color') is-invalid @enderror" autofocus>
+
+
+                                @error('color')
+                                <p class="text-danger">{{$message}}</p>
+                                @enderror
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <label class="col-md-4 col-form-label text-md-right">Image:</label>
+                            <div class="col-md-6">
+                                <input type="file" name="image" class="form-control-file  @error('image') is-invalid @enderror">
+                                @error('image')
+                                <p class="text-danger">{{ $message }}</p>
+                                @enderror
+
+
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-0 ml-4">
+                            <div class="col-md-6 offset-md-4">
+                                <button type="submit" class="btn btn-info">
+                                    Save
+                                </button>
+                            </div>
+                        </div>
 
 
 
-<div class="position-relative row form-group mt-3">
-        <label for="exampleEmail" class="col-sm-2 col-form-label">Name Category :</label>
-
-        <div class="col-sm-8">
-
-                <input type="text"  name ="name"  value="{{old('name', $Category->name )}}" class="form-control">
-        </div>
 
 
 
 
 
-        <div class="position-relative row form-check">
-                <div class="col-sm-10 offset-sm-2">
-                    <button  type="submit" class="btn btn-primary">Save</button>
+
+
+
+
+
+
+
+                    </form>
+
                 </div>
             </div>
-
-
-
-</form>
-</div>
-</div>
-</div>
+        </div>
+    </div>
 </div>
 @endsection

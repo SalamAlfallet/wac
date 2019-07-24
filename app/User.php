@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use DB;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -17,7 +18,7 @@ class User extends Authenticatable implements MustVerifyEmail
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password','birthday','avater','country','username'
+        'name', 'email', 'password', 'birthday', 'avater', 'country', 'username', 'role_id', 'admin'
     ];
 
     /**
@@ -42,6 +43,41 @@ class User extends Authenticatable implements MustVerifyEmail
 
     ];
 
+    public function routeNotificationForNexmo($notification)
+    {
+        return $this->mobile;
+    }
 
-    protected $dates=['birthday'];
+    // public function sendPasswordResetNotification($token)
+    // {
+    //     $this->notify(new ResetPasswordNotification($token));
+    // }
+    protected $dates = ['birthday'];
+
+    public function isSuperAdmin()
+    {
+
+        if ($this->admin == 1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function hasPerm($perm)
+    {
+
+        return DB::table('permissions')
+       // ->select('count(permissions.*)')
+            ->join('permission_roles', 'permission_roles.permission_id', '=', 'permissions.id')
+            ->join('users', 'users.role_id', '=', 'permission_roles.role_id')
+            ->where('users.id', $this->id)
+            ->where('permissions.code', $perm)
+            ->count();
+
+
+        // return UserPerm::where('user_id', $this->id)->where('perm', $perm)->count();
+
+
+    }
 }

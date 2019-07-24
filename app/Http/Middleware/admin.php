@@ -22,7 +22,7 @@ class admin
             if(!$user){
             return route('login');
               }
-              if($user->admin != 1){
+              if($user->admin < 0){
 
                 return response('Your not Admin !!');
               }

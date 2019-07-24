@@ -4,10 +4,13 @@ namespace App\Http\Controllers\admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Notifications\NewPost as NewPostNotification;
 use App\Post;
 use App\Category;
 use App\PostCategory;
 use App\PostTag;
+use App\User;
+use Auth;
 use DB;
 
 class PostsController extends Controller
@@ -20,11 +23,16 @@ class PostsController extends Controller
 
 
         $this->middleware('auth');
-
     }
 
     public function index()
     {
+
+
+        $user = Auth::user();
+        if (!$user->can('view-any', Post::class)) {
+            abort(403);
+        }
 
         //  return  $Post = Post::with('get_category_post')->where('id','=',10)->get();
         //  $categories = Category::with('get_post_category')->get();
@@ -42,7 +50,7 @@ class PostsController extends Controller
         return view('admin.posts.index')->with([
             // 'posts'=> Post::all(),
             'posts' => Post::
-            // with('categories')
+                // with('categories')
                 select('posts.*')
                 ->leftJoin('post_category', 'posts.id', '=', 'post_category.post_id')
 
@@ -73,7 +81,7 @@ class PostsController extends Controller
 
                 //   ->where('title','LIKE','%'.$title.'%')
                 //   ->where('status','LIKE','%'.$status.'%')
-                ->orderBy('posts.id', 'desc')->distinct()->paginate(3),
+                ->orderBy('posts.id', 'desc')->distinct()->paginate(5),
 
             // 'posts'=> Post::withTrashed()->get(),
 
@@ -84,7 +92,10 @@ class PostsController extends Controller
 
     public function trashed()
     {
-
+        $user = Auth::user();
+        if (!$user->can('trashed', Post::class)) {
+            abort(403);
+        }
         return view('admin.posts.trashed')->with([
 
             'posts' => Post::withTrashed()->paginate(3)
@@ -99,6 +110,11 @@ class PostsController extends Controller
 
 
         $post = Post::onlyTrashed()->where('id', '=', $id)->first();
+
+        $user = Auth::user();
+        if (!$user->can('restore', $post)) {
+            abort(403);
+        }
         // $post=Post::onlyTrashed()->findOrfail($id);;
         $post->restore();
         return redirect(route('admin.posts'))->with('message', sprintf('Post "%s" restore!', $post->title));;;
@@ -106,8 +122,15 @@ class PostsController extends Controller
 
     public function forceDelete($id)
     {
+
+
         //$post = Post::onlyTrashed()->where('id', '=', $id)->first();
         $post = Post::onlyTrashed()->findOrFail($id);
+
+        $user = Auth::user();
+        if (!$user->can('force-delete', $post)) {
+            abort(403);
+        }
         $post->forceDelete();
 
         return redirect(route('admin.posts.trashed'))
@@ -117,6 +140,11 @@ class PostsController extends Controller
     // view form add posts
     public function create()
     {
+
+        $user = Auth::user();
+        if (!$user->can('create',Post::class)) {
+            abort(403);
+        }
         $category = category::all();
         $this->data['category'] = $category;
         // $this->data['user'] = $category;
@@ -131,12 +159,12 @@ class PostsController extends Controller
         //$new_cat=new PostCategory();
 
 
-        if($request->hasFile('image')){
-         $image = $request->file('image');
-        $path = $image->store('images', 'public');
-        }else{
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $path = $image->store('images', 'public');
+        } else {
 
-          $path=null;
+            $path = null;
         }
 
         $request->validate([
@@ -144,13 +172,14 @@ class PostsController extends Controller
             'title' => 'required',
             'content' => 'required',
             'image' => 'required|image',
-            'status' =>'required',
-            'category_id' =>'required',
-             'tag_id' =>'required'
+            'status' => 'required',
+            'category_id' => 'required',
+            'tag_id' => 'required'
 
 
         ]);
         $post = new Post();
+        $post->user_id = Auth::user()->id;
         $post->title = $request->input('title');
         $post->content = $request->input('content');
         $post->image = $path;
@@ -176,7 +205,8 @@ class PostsController extends Controller
         }
 
 
-
+        $user = User::find(1);
+        $user->notify(new NewPostNotification($post));
 
         return redirect(route('admin.posts'))->with('message', sprintf('Post "%s" add!', $post->title));;
     }
@@ -194,6 +224,12 @@ class PostsController extends Controller
         //    $post = Post::with('get_category_post')->where('id','=',$id)->first();
 
         $post = Post::findOrfail($id);
+
+
+        $user = Auth::user();
+        if (!$user->can('update',$post)) {
+            abort(403);
+        }
         $this->data['post'] = $post;
 
         $category = category::all();
@@ -281,8 +317,14 @@ class PostsController extends Controller
     public function delete($id)
     {
 
-        $post = Post::findOrfail($id);
 
+
+
+        $post = Post::findOrfail($id);
+        $user = Auth::user();
+        if (!$user->can('delete',$post)) {
+            abort(403);
+        }
         $post->delete();
         return redirect(route('admin.posts'))
             ->with('message', sprintf('Post "%s" deleted!', $post->title));

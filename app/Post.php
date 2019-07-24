@@ -8,9 +8,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Support\Facades\DB;
 
-
 class Post extends Model
 {
+
+
 
     use SoftDeletes;
 
@@ -59,6 +60,11 @@ class Post extends Model
     {
         return $this->belongsToMany(Tag::class, 'post_tag', 'post_id', 'tag_id');
     }
+    public function user()
+    {
+        return $this->hasOne(User::class,'id','user_id')->withDefault();
+
+    }
 
     public function getCatogry()
     {
@@ -95,7 +101,7 @@ class Post extends Model
     public static function postcatid($id)
     {
         return DB::table('posts')
-            ->select('category_id')
+            ->select('category_id','categories.name','categories.color')
             ->leftjoin('post_category', 'posts.id', '=', 'post_id')
             ->leftjoin('categories', 'categories.id', '=', 'category_id')
             ->where(['posts.id' => $id])
@@ -110,4 +116,64 @@ class Post extends Model
 
         return $this->hasOne(PostStat::class,'post_id','id')->withDefault();
     }
+
+
+    public function relatedPosts(){
+
+
+
+        // $posts=DB::table('posts')
+        // ->select('posts.*')
+        // ->distinct()
+        $posts=Post::with(['categories','tags'])
+        ->select('posts.*')
+        ->distinct()
+        ->join('post_tag','posts.id','=','post_tag.post_id')
+        ->whereIn('post_tag.tag_id',$this->tags->pluck('id')->toArray())
+        ->where('posts.id','<>',$this->id)
+        ->paginate();
+        return  $posts;
+    }
+
+    public function relatedPosts_InCategory($id){
+
+
+
+        // $posts=DB::table('posts')
+        // ->select('posts.*')
+        // ->distinct()
+        $posts=Post::with(['categories','tags'])
+        ->select('posts.*')
+        ->distinct()
+        ->join('post_tag','posts.id','=','post_tag.post_id')
+        ->join('post_category', 'posts.id', '=', 'post_id')
+
+        ->whereIn('post_tag.tag_id',$this->tags->pluck('id')->toArray())
+        ->where('posts.id','<>',$this->id)
+        ->where('category_id','=',$id)
+        ->paginate();
+        return  $posts;
+    }
+
+
+    public static function mostView()
+    {
+        return DB::table('posts')
+            ->select('posts.*','post_stats.views as views')
+            ->leftjoin('post_stats', 'posts.id', '=', 'post_id')
+
+            ->orderBy('post_stats.views', 'DESC')
+
+           ;
+    }
+
+    public static function get_comments_to_post($id){
+
+        return DB::table('posts')
+        ->leftjoin('comments', 'posts.id', '=', 'post_id')
+        ->where(['posts.id' => $id]);
+
+    }
+
+
 }

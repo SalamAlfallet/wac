@@ -20,9 +20,9 @@ class PostTag extends Migration
 
             $table->integer('tag_id')->unsigned();
 
-            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');;
+            $table->foreign('post_id')->references('id')->on('posts')->onDelete('cascade');
 
-            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');;
+            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('cascade');
 
             $table->timestamps();
 

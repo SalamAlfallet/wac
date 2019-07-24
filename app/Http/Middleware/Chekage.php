@@ -18,17 +18,17 @@ public function handle($request, Closure $next)
 {
 
 
-$user=Auth::user();
-if(!$user){
-return redirect(route('login'));
+// $user=Auth::user();
+// if(!$user){
+// return redirect(route('login'));
 
-}
-$now=now();
-$age= $now->diffInYears($user->birthday);
-if($age < 20){
-    return response("You are not 20");
+// }
+// $now=now();
+// $age= $now->diffInYears($user->birthday);
+// if($age < 20){
+//     return response("You are not 20");
 
-}
+// }
 
 return $next($request);
 }
